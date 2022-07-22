@@ -5,6 +5,7 @@ import ch15.classroom.demo.models.Student;
 import ch15.classroom.demo.models.Teacher;
 import ch15.classroom.demo.payloads.request.StudentFeePay;
 import ch15.classroom.demo.payloads.response.MessageResponse;
+import ch15.classroom.demo.repository.StudentRepository;
 import ch15.classroom.demo.service.SchoolService;
 import ch15.classroom.demo.service.StudentService;
 import ch15.classroom.demo.service.TeacherService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -27,6 +29,8 @@ public class StudentController {
     TeacherService teacherService;
     @Autowired
     SchoolService schoolService;
+    @Autowired
+    StudentRepository studentRepository;
 
     @PostMapping("/")
     public ResponseEntity<Student> createStudent(@RequestBody Student student) {
@@ -51,6 +55,14 @@ public class StudentController {
     @GetMapping("/{id}")
     public ResponseEntity<Student> getOne(@PathVariable Long id) {
         return ResponseEntity.ok(studentService.findStudent(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteStudentById(@PathVariable Long id) {
+        Optional<Student> student = studentRepository.findById(id);
+
+        studentRepository.deleteById(id);
+        return new ResponseEntity<>(student + " Student has been removed", HttpStatus.OK);
     }
 
     @GetMapping("/teacher/{teacherId}")
